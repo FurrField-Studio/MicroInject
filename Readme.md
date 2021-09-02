@@ -2,6 +2,9 @@
 
 MicroInject is simple Dependency Injection framework made for Unity Engine that allows you to easily inject components.
 <br>
+
+<b>Full documentation is available here:</b> [Documentation](https://furrfield-studio.github.io/MicroInject-Docs/)
+
 <br>
 Features:
 <br>
@@ -12,9 +15,62 @@ Features:
 - (<b>Preview</b> not finished) Dynamically named dependencies - the same as above but names can change during runtime (Useful when we want to inject specific player data based on a name during runtime)
 
 <br>
+
+# Installation
+
+<details>
+    <summary>Using OpenUPM (Recommended) (Needs to publish to OpenUPM)</summary>
+
+<br>
+Add the OpenUPM registry with the ``com.furrfield`` scope to your project
 <br>
 
-## Basic usage
+- Open ``Edit/Project Settings/Package Manager``
+- Add a new Scoped Registry:
+```
+Name: OpenUPM
+URL:  https://package.openupm.com/
+Scope(s): com.furrfield
+```
+- Click save
+<br>
+
+Add this package:
+
+- Open ``Window/Package Manager``
+- Click ``+``
+- Click ``Add package from git URL`` or ``Add package by name``
+- Paste com.furrfield.micro-inject
+- Click ``Add``
+</details>
+
+<details>
+    <summary>Using package (Recommended)</summary>
+
+- Open ``Window/Package Manager``
+- Click ``+``
+- Click ``Add package from git URL`` or ``Add package by name``
+- Add ``https://github.com/FurrField-Studio/MicroInject.git`` in Package Manager
+
+</details>
+
+<details>
+    <summary>Using AssetStore (No Samples available) (Needs to publish to assetstore)</summary>
+    
+</details>
+
+<details>
+    <summary>Using .unitypackage (No Samples available)</summary>
+<br>
+
+- Go to ``https://github.com/FurrField-Studio/MicroInject/releases`` and download latest ``MicroInject.unitypackage``
+- Import it to your project
+    
+</details>
+
+<br>
+
+# Basic usage
 
 ### Marking as dependency
 To use component as dependency you need to mark its class using ``[Dependency]`` attribute.
@@ -39,7 +95,7 @@ public class ClassB : MonoBehaviour
 then add ``RegisterAsDependencies`` component to gameobject that have components with ``[Dependency]`` attribute.
 
 ### Marking field for injecting
-To inject dependency into a field you need to mark it using ``[Inject]`` attribute, and call ``{{project.codename}}.InjectDependencies(this)`` in ``void Start()``
+To inject dependency into a field you need to mark it using ``[Inject]`` attribute, and call ``MicroInject.InjectDependencies(this)`` in ``void Start()``
 <br>
 Example:
 
@@ -51,7 +107,7 @@ public class InjectTest : MonoBehaviour
     
     void Start()
     {
-        {{project.codename}}.InjectDependencies(this);
+        MicroInject.InjectDependencies(this);
     }
 }
 ```
