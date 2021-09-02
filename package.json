@@ -10,7 +10,7 @@
   },
   "unity": "2019.4",
   "type": "library",
-  "documentationUrl": "https://furrfieldstudio.gitlab.io/microinject/microinject-docs",
+  "documentationUrl": "https://furrfield-studio.github.io/MicroInject-Docs/",
   "samples": [
     {
       "displayName": "Usage Sample",
