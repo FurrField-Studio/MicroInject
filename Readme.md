@@ -19,7 +19,7 @@ Features:
 # Installation
 
 <details>
-    <summary>Using OpenUPM (Recommended) (Needs to publish to OpenUPM)</summary>
+    <summary>Using OpenUPM (Recommended) (Needs to be published to OpenUPM)</summary>
 
 <br>
 Add the OpenUPM registry with the ``com.furrfield`` scope to your project
@@ -55,7 +55,7 @@ Add this package:
 </details>
 
 <details>
-    <summary>Using AssetStore (No Samples available) (Needs to publish to assetstore)</summary>
+    <summary>Using AssetStore (No Samples available) (Needs to be published to AssetStore)</summary>
     
 </details>
 
@@ -72,8 +72,8 @@ Add this package:
 
 # Basic usage
 
-### Marking as dependency
-To use component as dependency you need to mark its class using ``[Dependency]`` attribute.
+### Marking component as dependency
+To use component as a dependency you need to mark its class using ``[Dependency]`` attribute.
 <br>
 Example:
 
@@ -94,7 +94,7 @@ public class ClassB : MonoBehaviour
 
 then add ``RegisterAsDependencies`` component to gameobject that have components with ``[Dependency]`` attribute.
 
-### Marking field for injecting
+### Marking field for injection
 To inject dependency into a field you need to mark it using ``[Inject]`` attribute, and call ``MicroInject.InjectDependencies(this)`` in ``void Start()``
 <br>
 Example:
