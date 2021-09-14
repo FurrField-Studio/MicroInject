@@ -1,5 +1,5 @@
 {
-  "name": "com.furrfield.micro-inject",
+  "name": "com.furrfield-studio.micro-inject",
   "version": "1.0.0",
   "displayName": "Micro Inject",
   "description": "MicroInject is simple Dependency Injection framework made for Unity Engine that allows you to easily inject components.",
@@ -9,7 +9,7 @@
     "url": "https://furrfield.com"
   },
   "unity": "2019.4",
-  "type": "library",
+  "type": "tool",
   "documentationUrl": "https://furrfield-studio.github.io/MicroInject-Docs/",
   "samples": [
     {

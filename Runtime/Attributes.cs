@@ -57,13 +57,4 @@
     }
 
     #endregion
-
-    //TODO add support for autoinjecting dynamically named dependencies
-    // [System.AttributeUsage(System.AttributeTargets.Field)]
-    // public class DynamicallyNamedDependencyField : System.Attribute
-    // {
-    //     public DynamicallyNamedDependencyField()
-    //     {
-    //     }
-    // }
 }

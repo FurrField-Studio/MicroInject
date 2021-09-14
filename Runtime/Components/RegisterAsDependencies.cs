@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace FurrFieldStudio.MicroInject
+namespace FurrFieldStudio.MicroInject.Components
 {
     public class RegisterAsDependencies : MonoBehaviour
     {

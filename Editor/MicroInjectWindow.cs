@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FurrFieldStudio.MicroInject.Components;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,9 @@ namespace FurrFieldStudio.MicroInject.Editor
 {
     public class MicroInjectWindow : EditorWindow
     {
+
+        private bool m_IsDebugFoldoutOpen;
+        
         [MenuItem("FurrField Studio/Micro Inject")]
         static void Init()
         {
@@ -32,16 +36,29 @@ namespace FurrFieldStudio.MicroInject.Editor
             {
                 InjectDependencies();
             }
+            
+            if (GUILayout.Button("Clear MicroInject lists"))
+            {
+                FurrFieldStudio.MicroInject.MicroInject.ClearMicroInjectLists();
+            }
+
+            m_IsDebugFoldoutOpen = EditorGUILayout.Foldout(m_IsDebugFoldoutOpen, "Debug");
+            if (m_IsDebugFoldoutOpen)
+            {
+                DebugDepencencies();
+                DebugNamedDependencies();
+                DebugDynamicInjectFields();
+            }
         }
 
         private static void InjectDependencies()
         {
-            LoadDependencies loadDependencies = FindObjectsOfType<LoadDependencies>()[0];
+            MicroInjectManager microInjectManager = FindObjectsOfType<MicroInjectManager>()[0];
             
             Dictionary<string, Component> namedDependencies = new Dictionary<string, Component>();
             Dictionary<Type, Component> dependencies = new Dictionary<Type, Component>();
             
-            foreach (var component in loadDependencies.DependenciesContainer)
+            foreach (var component in microInjectManager.DependenciesContainer)
             {
                 (bool, string) isNamedDependency = IsNamedDependency(component);
                 if (isNamedDependency.Item1)
@@ -97,9 +114,9 @@ namespace FurrFieldStudio.MicroInject.Editor
 
         private static void PreregisterDependencies()
         {
-            LoadDependencies loadDependencies = Object.FindObjectsOfType<LoadDependencies>()[0];
+            MicroInjectManager microInjectManager = Object.FindObjectsOfType<MicroInjectManager>()[0];
 
-            loadDependencies.DependenciesContainer.Clear();
+            microInjectManager.DependenciesContainer.Clear();
 
             var rootObjs = SceneManager.GetActiveScene().GetRootGameObjects();
             foreach (var root in rootObjs)
@@ -119,7 +136,7 @@ namespace FurrFieldStudio.MicroInject.Editor
                                 componentType = com.GetType();
                                 if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
                                 {
-                                    loadDependencies.DependenciesContainer.Add(com);
+                                    microInjectManager.DependenciesContainer.Add(com);
                                 }
                             }
                         }
@@ -127,5 +144,66 @@ namespace FurrFieldStudio.MicroInject.Editor
                 }
             }
         }
+
+        #region DebugViews
+
+        private static void DebugDepencencies()
+        {
+            GUILayout.BeginVertical("BOX");
+            GUILayout.Label("Dependencies");
+            
+            foreach (var kvp in MicroInject.GetDependenciesList())
+            {
+                GUILayout.BeginVertical("BOX");
+                
+                EditorGUILayout.LabelField("Type:", kvp.Key.ToString());
+                EditorGUILayout.ObjectField("Component:", kvp.Value, typeof(Component), true);
+                
+                GUILayout.EndVertical();
+            }
+            GUILayout.EndVertical();
+        }
+
+        private static void DebugNamedDependencies()
+        {
+            GUILayout.BeginVertical("BOX");
+            GUILayout.Label("Named Dependencies");
+            
+            foreach (var kvp in MicroInject.GetNamedDependencies())
+            {
+                GUILayout.BeginVertical("BOX");
+                
+                EditorGUILayout.LabelField("Name:", kvp.Key);
+                EditorGUILayout.ObjectField("Component:", kvp.Value, typeof(Component), true);
+                
+                GUILayout.EndVertical();
+            }
+            GUILayout.EndVertical();
+        }
+
+        private static void DebugDynamicInjectFields()
+        {
+            GUILayout.BeginVertical("BOX");
+            GUILayout.Label("Dynamic Inject Fields");
+
+            Component comp = null;
+            
+            foreach (var kvp in MicroInject.GetDynamicInjectFields())
+            {
+                GUILayout.BeginVertical("BOX");
+                
+                EditorGUILayout.LabelField("Name:", kvp.Key);
+
+                if (kvp.Value.Count > 0) comp = kvp.Value[0].ObjectValue;
+                else comp = null;
+                
+                EditorGUILayout.ObjectField("Component:", comp, typeof(Component), true);
+
+                GUILayout.EndVertical();
+            }
+            GUILayout.EndVertical();
+        }
+
+        #endregion
     }
 }
