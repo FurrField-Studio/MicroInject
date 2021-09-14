@@ -11,8 +11,8 @@ Features:
 
 - Runtime injection
 - In-editor injection - injecting dependencies without any runtime performance impact
-- Named dependencies - injecting dependencies that can be named (Useful in multiplayer projects when we want to inject Player1 components first and Player2 components when Player1 dies, to see Player2 stats)
-- (<b>Preview</b> not finished) Dynamically named dependencies - the same as above but names can change during runtime (Useful when we want to inject specific player data based on a name during runtime)
+- Named dependencies - injecting dependencies that can be named (Useful when we have couple dependencies that have the same type)
+- Dynamically named dependencies (or for short Dynamic dependencies) - the same as above but name can be changed during runtime (Useful when we want to inject specific player data based on a name that can change during runtime)
 
 <br>
 
