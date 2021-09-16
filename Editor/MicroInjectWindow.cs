@@ -117,30 +117,38 @@ namespace FurrFieldStudio.MicroInject.Editor
             MicroInjectManager microInjectManager = Object.FindObjectsOfType<MicroInjectManager>()[0];
 
             microInjectManager.DependenciesContainer.Clear();
+            
+            int countLoaded = SceneManager.sceneCount;
+            Scene[] loadedScenes = new Scene[countLoaded];
 
-            var rootObjs = SceneManager.GetActiveScene().GetRootGameObjects();
-            foreach (var root in rootObjs)
+            GameObject[] rootObjs;
+            
+            for (int i = 0; i < countLoaded; i++)
             {
-                RegisterAsDependencies[] registerAsDependenciesArray = root.GetComponentsInChildren<RegisterAsDependencies>(true);
-                if (registerAsDependenciesArray.Length > 0)
+                rootObjs = SceneManager.GetSceneAt(i).GetRootGameObjects();
+                foreach (var root in rootObjs)
                 {
-                    Type registerAsDependenciesType = registerAsDependenciesArray[0].GetType();
-                    Type componentType;
-                    foreach (var registerAsDependency in registerAsDependenciesArray)
+                    RegisterAsDependencies[] registerAsDependenciesArray = root.GetComponentsInChildren<RegisterAsDependencies>(true);
+                    if (registerAsDependenciesArray.Length > 0)
                     {
-                        if (registerAsDependency.RegisterInEditor)
+                        Type registerAsDependenciesType = registerAsDependenciesArray[0].GetType();
+                        Type componentType;
+                        foreach (var registerAsDependency in registerAsDependenciesArray)
                         {
-                            Component[] components = registerAsDependency.GetComponents(typeof(Component));
-                            foreach (var com in components)
+                            if (registerAsDependency.RegisterInEditor)
                             {
-                                componentType = com.GetType();
-                                if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
+                                Component[] components = registerAsDependency.GetComponents(typeof(Component));
+                                foreach (var com in components)
                                 {
-                                    microInjectManager.DependenciesContainer.Add(com);
+                                    componentType = com.GetType();
+                                    if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
+                                    {
+                                        microInjectManager.DependenciesContainer.Add(com);
+                                    }
                                 }
                             }
-                        }
-                    }   
+                        }   
+                    }
                 }
             }
         }
