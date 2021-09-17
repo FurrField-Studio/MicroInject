@@ -53,12 +53,12 @@ namespace FurrFieldStudio.MicroInject.Editor
 
         private static void InjectDependencies()
         {
-            MicroInjectManager microInjectManager = FindObjectsOfType<MicroInjectManager>()[0];
+            LoadDependencies loadDependencies = FindObjectsOfType<LoadDependencies>()[0];
             
             Dictionary<string, Component> namedDependencies = new Dictionary<string, Component>();
             Dictionary<Type, Component> dependencies = new Dictionary<Type, Component>();
             
-            foreach (var component in microInjectManager.DependenciesContainer)
+            foreach (var component in loadDependencies.DependenciesContainer)
             {
                 (bool, string) isNamedDependency = IsNamedDependency(component);
                 if (isNamedDependency.Item1)
@@ -114,9 +114,9 @@ namespace FurrFieldStudio.MicroInject.Editor
 
         private static void PreregisterDependencies()
         {
-            MicroInjectManager microInjectManager = Object.FindObjectsOfType<MicroInjectManager>()[0];
-
-            microInjectManager.DependenciesContainer.Clear();
+            LoadDependencies loadDependencies = FindObjectsOfType<LoadDependencies>()[0];
+            
+            loadDependencies.DependenciesContainer.Clear();
             
             int countLoaded = SceneManager.sceneCount;
             Scene[] loadedScenes = new Scene[countLoaded];
@@ -143,7 +143,7 @@ namespace FurrFieldStudio.MicroInject.Editor
                                     componentType = com.GetType();
                                     if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
                                     {
-                                        microInjectManager.DependenciesContainer.Add(com);
+                                        loadDependencies.DependenciesContainer.Add(com);
                                     }
                                 }
                             }

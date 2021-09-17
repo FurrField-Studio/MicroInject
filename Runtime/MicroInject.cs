@@ -32,8 +32,12 @@ namespace FurrFieldStudio.MicroInject
             {
                 if (fi.IsDefined(typeof(NamedDependencyField), true) && fi.FieldType == typeof(string))
                 {
-                    NamedDependencies.Add((string) fi.GetValue(component), component);
-                    return true;
+                    string dependencyName = (string) fi.GetValue(component);
+                    if (!NamedDependencies.ContainsKey(dependencyName))
+                    {
+                        NamedDependencies.Add(dependencyName, component);
+                        return true;
+                    }
                 }
             }
 

@@ -19,7 +19,7 @@ public class InjectTest : MonoBehaviour
     [Inject("Test1",true)]
     public ClassNamedDependency ClassNamedDependencyInEditor;
 
-    public DynamicInject<DynamicDependency> DynamicInject;
+    public DynamicInject<DynamicDependency> DynamicInject = new DynamicInject<DynamicDependency>();
 
     void Start()
     {

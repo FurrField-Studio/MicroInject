@@ -44,21 +44,24 @@ namespace FurrFieldStudio.MicroInject
                     idi.Dirty = true;
                 }
             }
-            
-            MicroInject.NamedDependencies.Add(value, Component);
 
-            if (MicroInject.DynamicInjectFields.ContainsKey(value))
+            if (!MicroInject.NamedDependencies.ContainsKey(value))
             {
-                foreach (var idi in MicroInject.DynamicInjectFields[InternalName])
+                MicroInject.NamedDependencies.Add(value, Component);
+
+                if (MicroInject.DynamicInjectFields.ContainsKey(value))
                 {
-                    idi.ObjectValue = Component;
-                    idi.IsInjected = true;
-                    idi.Dirty = true;
+                    foreach (var idi in MicroInject.DynamicInjectFields[InternalName])
+                    {
+                        idi.ObjectValue = Component;
+                        idi.IsInjected = true;
+                        idi.Dirty = true;
+                    }
                 }
-            }
-            else
-            {
-                MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
+                else
+                {
+                    MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
+                }
             }
         }
     }

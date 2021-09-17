@@ -70,7 +70,9 @@ Add this package:
 
 <br>
 
-# Basic usage
+##Basic usage
+
+First add ``Micro Inject Manager`` somewhere in your gameobjects, so system can clear internal data and manage scene switching.
 
 ### Marking component as dependency
 To use component as a dependency you need to mark its class using ``[Dependency]`` attribute.

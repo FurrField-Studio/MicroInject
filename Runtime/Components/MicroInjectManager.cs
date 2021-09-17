@@ -11,9 +11,6 @@ namespace FurrFieldStudio.MicroInject.Components
     {
         public bool RebuildDependencyListOnSceneChange;
 
-        [ReadOnly]
-        public List<Component> DependenciesContainer;
-
         private void Start()
         {
             DontDestroyOnLoad(this);
@@ -32,11 +29,6 @@ namespace FurrFieldStudio.MicroInject.Components
                 {
                     MicroInject.RebuildDependencyList();
                 };
-            }
-            
-            foreach (var component in DependenciesContainer)
-            {
-                MicroInject.RegisterAsDependency(component);
             }
         }
     }

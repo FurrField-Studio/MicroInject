@@ -13,7 +13,7 @@ namespace Samples.Usage_Sample.Scripts
         {
             DynamicDependencyName = new DynamicDependencyName(this);
             DynamicDependencyName.Name = "DynamicTest";
-            
+
             StartCoroutine(DynamicDependencyCoroutine());
         }
         
