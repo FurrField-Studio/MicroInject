@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DynamicDependencyName:
-    InternalName: 
+    m_InternalName: DynamicTest
 --- !u!1 &1289878548
 GameObject:
   m_ObjectHideFlags: 0

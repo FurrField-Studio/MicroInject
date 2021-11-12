@@ -10,34 +10,45 @@ namespace FurrFieldStudio.MicroInject
     {
         public string Name
         {
-            get => InternalName;
+            get => m_InternalName;
             set
             {
                 NameSet(value);
-                InternalName = value;
+                m_InternalName = value;
             }
         }
 
         [SerializeField]
-        private string InternalName = "";
+        private string m_InternalName = "";
 
-        internal Component Component;
-
-        public DynamicDependencyName(Component component)
+        public Component Component
         {
-            Component = component;
+            private get
+            {
+                return m_InternalComponent;
+            }
+            set
+            {
+                if (m_InternalComponent == null)
+                {
+                    m_InternalComponent = value;
+                    NameSet(m_InternalName);
+                }
+            }
         }
+        
+        private Component m_InternalComponent = null;
 
         private void NameSet(string value)
         {
-            if (MicroInject.NamedDependencies.ContainsKey(InternalName))
+            if (MicroInject.NamedDependencies.ContainsKey(m_InternalName))
             {
-                MicroInject.NamedDependencies.Remove(InternalName);
+                MicroInject.NamedDependencies.Remove(m_InternalName);
             }
 
-            if (MicroInject.DynamicInjectFields.ContainsKey(InternalName))
+            if (MicroInject.DynamicInjectFields.ContainsKey(m_InternalName))
             {
-                foreach (var idi in MicroInject.DynamicInjectFields[InternalName])
+                foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
                 {
                     idi.ObjectValue = null;
                     idi.IsInjected = false;
@@ -51,7 +62,7 @@ namespace FurrFieldStudio.MicroInject
 
                 if (MicroInject.DynamicInjectFields.ContainsKey(value))
                 {
-                    foreach (var idi in MicroInject.DynamicInjectFields[InternalName])
+                    foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
                     {
                         idi.ObjectValue = Component;
                         idi.IsInjected = true;

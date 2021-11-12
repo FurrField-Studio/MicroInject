@@ -7,12 +7,11 @@ namespace Samples.Usage_Sample.Scripts
 {
     public class DynamicDependency : MonoBehaviour
     {
-        public DynamicDependencyName DynamicDependencyName;
+        public DynamicDependencyName DynamicDependencyName = new DynamicDependencyName();
 
         private void Awake()
         {
-            DynamicDependencyName = new DynamicDependencyName(this);
-            DynamicDependencyName.Name = "DynamicTest";
+            DynamicDependencyName.Component = this;
 
             StartCoroutine(DynamicDependencyCoroutine());
         }
