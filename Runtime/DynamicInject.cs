@@ -16,7 +16,7 @@ namespace FurrFieldStudio.MicroInject
 
         public DynamicInject()
         {
-            if (!string.IsNullOrEmpty(InternalName)) MicroInject.RegisterDynamicInject(this);
+            RegisterInSystem();
         }
 
         private T GetValue()
@@ -60,37 +60,52 @@ namespace FurrFieldStudio.MicroInject
 
         internal bool Dirty;
 
+        private bool m_Registered = false;
+        
+        public void RegisterInSystem()
+        {
+            if (!string.IsNullOrEmpty(InternalName))
+            {
+                MicroInject.RegisterDynamicInject(this);
+                m_Registered = true;
+                NameSet(InternalName);
+            }
+        }
+
         private void NameSet(string value)
         {
-            if (MicroInject.DynamicInjectFields.ContainsKey(InternalName))
+            if (m_Registered)
             {
-                if (MicroInject.DynamicInjectFields[InternalName].Count == 1)
+                if (MicroInject.DynamicInjectFields.ContainsKey(InternalName))
                 {
-                    MicroInject.DynamicInjectFields.Remove(InternalName);
+                    if (MicroInject.DynamicInjectFields[InternalName].Count == 1)
+                    {
+                        MicroInject.DynamicInjectFields.Remove(InternalName);
+                    }
+                    else
+                    {
+                        MicroInject.DynamicInjectFields[InternalName].Remove(this);
+                    }
+                }
+
+                if (!MicroInject.DynamicInjectFields.ContainsKey(value))
+                {
+                    MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
+                }
+
+                MicroInject.DynamicInjectFields[value].Add(this);
+
+                if (MicroInject.NamedDependencies.ContainsKey(value))
+                {
+                    ObjectValue = MicroInject.NamedDependencies[value];
                 }
                 else
                 {
-                    MicroInject.DynamicInjectFields[InternalName].Remove(this);
+                    ObjectValue = null;
                 }
-            }
-
-            if (!MicroInject.DynamicInjectFields.ContainsKey(value))
-            {
-                MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
-            }
-
-            MicroInject.DynamicInjectFields[value].Add(this);
-
-            if (MicroInject.NamedDependencies.ContainsKey(value))
-            {
-                ObjectValue = MicroInject.NamedDependencies[value];
-            }
-            else
-            {
-                ObjectValue = null;
-            }
             
-            Dirty = true;
+                Dirty = true;
+            }
         }
     }
 }

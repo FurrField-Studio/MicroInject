@@ -19,11 +19,12 @@ public class InjectTest : MonoBehaviour
     [Inject("Test1",true)]
     public ClassNamedDependency ClassNamedDependencyInEditor;
 
-    public DynamicInject<DynamicDependency> DynamicInject = new DynamicInject<DynamicDependency>();
+    public DynamicInject<DynamicDependency> DynamicInject;
 
     void Start()
     {
         MicroInject.InjectDependencies(this);
+        DynamicInject.RegisterInSystem();
         StartCoroutine(DynamicInjectCoroutine());
     }
 
@@ -34,6 +35,7 @@ public class InjectTest : MonoBehaviour
 
     private IEnumerator DynamicInjectCoroutine()
     {
+        Debug.Log(DynamicInject.Value);
         yield return new WaitForSeconds(0.5f);
         DynamicInject.Name = "DynamicTest";
         Debug.Log(DynamicInject.Value);

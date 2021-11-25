@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace FurrFieldStudio.MicroInject.Components
 {
@@ -15,6 +18,7 @@ namespace FurrFieldStudio.MicroInject.Components
         {
             DontDestroyOnLoad(this);
 
+#if UNITY_EDITOR
             EditorApplication.playModeStateChanged += change =>
             {
                 if (change == PlayModeStateChange.ExitingPlayMode)
@@ -22,13 +26,11 @@ namespace FurrFieldStudio.MicroInject.Components
                     MicroInject.ClearMicroInjectLists();
                 }
             };
+#endif
 
             if (RebuildDependencyListOnSceneChange)
             {
-                SceneManager.sceneUnloaded += scene =>
-                {
-                    MicroInject.RebuildDependencyList();
-                };
+                SceneManager.sceneUnloaded += scene => MicroInject.RebuildDependencyList();
             }
         }
     }

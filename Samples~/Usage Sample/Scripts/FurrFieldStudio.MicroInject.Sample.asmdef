@@ -1,14 +1,14 @@
 {
-    "name": "FurrFieldStudio.MicroInject.Test",
-    "references": [
-        "FurrFieldStudio.MicroInject"
-    ],
-    "optionalUnityReferences": [],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": []
+  "name": "FurrFieldStudio.MicroInject.Test",
+  "references": [
+    "FurrFieldStudio.MicroInject"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": []
 }

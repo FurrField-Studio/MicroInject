@@ -436,7 +436,7 @@ MonoBehaviour:
   ClassNamedDependency: {fileID: 0}
   ClassNamedDependencyInEditor: {fileID: 1742947483}
   DynamicInject:
-    InternalName: 
+    InternalName: DynamicTest
     ObjectValue: {fileID: 0}
     InternalValue: {fileID: 0}
 --- !u!4 &2017951935

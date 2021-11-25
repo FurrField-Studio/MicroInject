@@ -29,11 +29,8 @@ namespace FurrFieldStudio.MicroInject
             }
             set
             {
-                if (m_InternalComponent == null)
-                {
-                    m_InternalComponent = value;
-                    NameSet(m_InternalName);
-                }
+                m_InternalComponent = value;
+                NameSet(m_InternalName);
             }
         }
         

@@ -1,16 +1,16 @@
 {
-    "name": "FurrFieldStudio.MicroInject.Editor",
-    "references": [
-        "FurrFieldStudio.MicroInject"
-    ],
-    "optionalUnityReferences": [],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": []
+  "name": "FurrFieldStudio.MicroInject.Editor",
+  "references": [
+    "FurrFieldStudio.MicroInject"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": []
 }
