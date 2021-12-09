@@ -25,8 +25,6 @@ namespace FurrFieldStudio.MicroInject
             {
                 InternalValue = ObjectValue as T;
                 Dirty = false;
-
-                IsInjected = InternalValue != null;
             }
 
             return InternalValue;
@@ -49,8 +47,8 @@ namespace FurrFieldStudio.MicroInject
 
         [SerializeField]
         internal string InternalName = "";
-        
-        public bool IsInjected { get; internal set; } = false;
+
+        public bool IsInjected => ObjectValue != null;
 
 #if UNITY_EDITOR
         public Component ObjectValue;

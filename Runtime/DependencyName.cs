@@ -48,7 +48,6 @@ namespace FurrFieldStudio.MicroInject
                 foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
                 {
                     idi.ObjectValue = null;
-                    idi.IsInjected = false;
                     idi.Dirty = true;
                 }
             }
@@ -62,7 +61,6 @@ namespace FurrFieldStudio.MicroInject
                     foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
                     {
                         idi.ObjectValue = Component;
-                        idi.IsInjected = true;
                         idi.Dirty = true;
                     }
                 }
