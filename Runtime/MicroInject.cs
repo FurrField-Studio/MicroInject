@@ -65,7 +65,7 @@ namespace FurrFieldStudio.MicroInject
         
         private static void InjectDependencies(object toInject, Dictionary<Type, Component> dependencies, Dictionary<string, Component> namedDependencies)
         {
-            FieldInfo[] infos = toInject.GetType().GetFields();
+            FieldInfo[] infos = toInject.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             List<FieldInfo> filteredInfos = new List<FieldInfo>(infos.Length);
             foreach (var fi in infos)
             {
@@ -85,7 +85,7 @@ namespace FurrFieldStudio.MicroInject
         
         public static void InjectDependenciesInEditor(object toInject, Dictionary<Type, Component> dependencies, Dictionary<string, Component> namedDependencies)
         {
-            FieldInfo[] infos = toInject.GetType().GetFields();
+            FieldInfo[] infos = toInject.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             List<FieldInfo> filteredInfos = new List<FieldInfo>(infos.Length);
             foreach (var fi in infos)
             {

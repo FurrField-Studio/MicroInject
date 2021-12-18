@@ -53,12 +53,12 @@ namespace FurrFieldStudio.MicroInject.Editor
 
         private static void InjectDependencies()
         {
-            LoadDependencies loadDependencies = FindObjectsOfType<LoadDependencies>()[0];
+            MicroInjectLoadDependencies microInjectLoadDependencies = FindObjectsOfType<MicroInjectLoadDependencies>()[0];
             
             Dictionary<string, Component> namedDependencies = new Dictionary<string, Component>();
             Dictionary<Type, Component> dependencies = new Dictionary<Type, Component>();
             
-            foreach (var component in loadDependencies.DependenciesContainer)
+            foreach (var component in microInjectLoadDependencies.DependenciesContainer)
             {
                 (bool, string) isNamedDependency = IsNamedDependency(component);
                 if (isNamedDependency.Item1)
@@ -114,9 +114,13 @@ namespace FurrFieldStudio.MicroInject.Editor
 
         private static void PreregisterDependencies()
         {
-            LoadDependencies loadDependencies = FindObjectsOfType<LoadDependencies>()[0];
+            MicroInjectLoadDependencies[] loadDependenciesArray = FindObjectsOfType<MicroInjectLoadDependencies>();
+
+            if (loadDependenciesArray.Length == 0) return;
+
+            MicroInjectLoadDependencies microInjectLoadDependencies = loadDependenciesArray[0];
             
-            loadDependencies.DependenciesContainer.Clear();
+            microInjectLoadDependencies.DependenciesContainer.Clear();
             
             int countLoaded = SceneManager.sceneCount;
             Scene[] loadedScenes = new Scene[countLoaded];
@@ -125,29 +129,30 @@ namespace FurrFieldStudio.MicroInject.Editor
             
             for (int i = 0; i < countLoaded; i++)
             {
+                Scene scene = SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded) continue;
+                
                 rootObjs = SceneManager.GetSceneAt(i).GetRootGameObjects();
                 foreach (var root in rootObjs)
                 {
                     RegisterAsDependencies[] registerAsDependenciesArray = root.GetComponentsInChildren<RegisterAsDependencies>(true);
-                    if (registerAsDependenciesArray.Length > 0)
+                    if (registerAsDependenciesArray.Length <= 0) continue;
+                    
+                    Type registerAsDependenciesType = registerAsDependenciesArray[0].GetType();
+                    Type componentType;
+                    foreach (var registerAsDependency in registerAsDependenciesArray)
                     {
-                        Type registerAsDependenciesType = registerAsDependenciesArray[0].GetType();
-                        Type componentType;
-                        foreach (var registerAsDependency in registerAsDependenciesArray)
+                        if (!registerAsDependency.RegisterInEditor) continue;
+                        
+                        Component[] components = registerAsDependency.GetComponents(typeof(Component));
+                        foreach (var com in components)
                         {
-                            if (registerAsDependency.RegisterInEditor)
+                            componentType = com.GetType();
+                            if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
                             {
-                                Component[] components = registerAsDependency.GetComponents(typeof(Component));
-                                foreach (var com in components)
-                                {
-                                    componentType = com.GetType();
-                                    if (componentType != registerAsDependenciesType && com is MonoBehaviour && componentType.GetCustomAttribute<Dependency>() != null)
-                                    {
-                                        loadDependencies.DependenciesContainer.Add(com);
-                                    }
-                                }
+                                microInjectLoadDependencies.DependenciesContainer.Add(com);
                             }
-                        }   
+                        }
                     }
                 }
             }

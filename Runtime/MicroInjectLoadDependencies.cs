@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FurrFieldStudio.MicroInject
 {
     [DefaultExecutionOrder(-100)]
-    public class LoadDependencies : MonoBehaviour
+    public class MicroInjectLoadDependencies : MonoBehaviour
     {
         public List<Component> DependenciesContainer;
         
