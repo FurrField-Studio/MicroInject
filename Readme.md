@@ -70,7 +70,7 @@ Add this package:
 
 <br>
 
-##Basic usage
+## Basic usage
 
 First add ``Micro Inject Manager`` somewhere in your gameobjects, so system can clear internal data and manage scene switching.
 
