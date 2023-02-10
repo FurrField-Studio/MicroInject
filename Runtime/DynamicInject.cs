@@ -14,9 +14,9 @@ namespace FurrFieldStudio.MicroInject
         [SerializeField]
         private T InternalValue;
 
-        public DynamicInject()
+        public DynamicInject(Component comp)
         {
-            RegisterInSystem();
+            RegisterInSystem(comp);
         }
 
         private T GetValue()
@@ -51,20 +51,23 @@ namespace FurrFieldStudio.MicroInject
         public bool IsInjected => ObjectValue != null;
 
 #if UNITY_EDITOR
-        public Component ObjectValue;
+        public object ObjectValue;
 #else
-        internal Component ObjectValue;
+        internal object ObjectValue;
 #endif
 
         internal bool Dirty;
 
         private bool m_Registered = false;
+
+        private Component m_Component;
         
-        public void RegisterInSystem()
+        public void RegisterInSystem(Component comp)
         {
             if (!string.IsNullOrEmpty(InternalName))
             {
-                MicroInject.RegisterDynamicInject(this);
+                m_Component = comp;
+                MicroInject.GetMicroInject(comp).RegisterDynamicInject(this);
                 m_Registered = true;
                 NameSet(InternalName);
             }
@@ -74,28 +77,30 @@ namespace FurrFieldStudio.MicroInject
         {
             if (m_Registered)
             {
-                if (MicroInject.DynamicInjectFields.ContainsKey(InternalName))
+                MicroInject mi = MicroInject.GetMicroInject(m_Component);
+                
+                if (mi.DynamicInjectFields.ContainsKey(InternalName))
                 {
-                    if (MicroInject.DynamicInjectFields[InternalName].Count == 1)
+                    if (mi.DynamicInjectFields[InternalName].Count == 1)
                     {
-                        MicroInject.DynamicInjectFields.Remove(InternalName);
+                        mi.DynamicInjectFields.Remove(InternalName);
                     }
                     else
                     {
-                        MicroInject.DynamicInjectFields[InternalName].Remove(this);
+                        mi.DynamicInjectFields[InternalName].Remove(this);
                     }
                 }
 
-                if (!MicroInject.DynamicInjectFields.ContainsKey(value))
+                if (!mi.DynamicInjectFields.ContainsKey(value))
                 {
-                    MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
+                    mi.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
                 }
 
-                MicroInject.DynamicInjectFields[value].Add(this);
+                mi.DynamicInjectFields[value].Add(this);
 
-                if (MicroInject.NamedDependencies.ContainsKey(value))
+                if (mi.NamedDependencies.ContainsKey(value))
                 {
-                    ObjectValue = MicroInject.NamedDependencies[value];
+                    ObjectValue = mi.NamedDependencies[value];
                 }
                 else
                 {

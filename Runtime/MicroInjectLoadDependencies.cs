@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FurrFieldStudio.MicroInject.Components;
 using UnityEngine;
 
 namespace FurrFieldStudio.MicroInject
@@ -11,9 +12,11 @@ namespace FurrFieldStudio.MicroInject
         
         private void Awake()
         {
+            MicroInject mi = MicroInject.GetMicroInject(this);
+
             foreach (var component in DependenciesContainer)
             {
-                MicroInject.RegisterAsDependency(component);
+                mi.RegisterAsDependency(component);
             }
         }
     }

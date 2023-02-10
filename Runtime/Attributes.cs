@@ -1,4 +1,6 @@
-﻿namespace FurrFieldStudio.MicroInject
+﻿using System;
+
+namespace FurrFieldStudio.MicroInject
 {
     #region InjectionAttributes
 
@@ -43,8 +45,11 @@
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public class Dependency : System.Attribute
     {
-        public Dependency()
+        public Type DependencyType { get; private set; }
+
+        public Dependency(Type dependencyType = null)
         {
+            DependencyType = dependencyType;
         }
     }
     

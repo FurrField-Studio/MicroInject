@@ -23,14 +23,14 @@ namespace FurrFieldStudio.MicroInject.Components
             {
                 if (change == PlayModeStateChange.ExitingPlayMode)
                 {
-                    MicroInject.ClearMicroInjectLists();
+                    MicroInject.Instance.ClearMicroInjectLists();
                 }
             };
 #endif
 
             if (RebuildDependencyListOnSceneChange)
             {
-                SceneManager.sceneUnloaded += scene => MicroInject.RebuildDependencyList();
+                SceneManager.sceneUnloaded += scene => MicroInject.Instance.RebuildDependencyList();
             }
         }
     }

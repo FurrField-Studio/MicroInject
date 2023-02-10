@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using FurrFieldStudio.MicroInject.Components;
 using UnityEngine;
 
 namespace FurrFieldStudio.MicroInject
@@ -29,6 +30,11 @@ namespace FurrFieldStudio.MicroInject
             }
             set
             {
+                if (m_MicroInject == null)
+                {
+                    m_MicroInject = MicroInject.GetMicroInject(value);
+                }
+                
                 m_InternalComponent = value;
                 NameSet(m_InternalName);
             }
@@ -36,29 +42,31 @@ namespace FurrFieldStudio.MicroInject
         
         private Component m_InternalComponent = null;
 
+        private MicroInject m_MicroInject;
+
         private void NameSet(string value)
         {
-            if (MicroInject.NamedDependencies.ContainsKey(m_InternalName))
+            if (m_MicroInject.NamedDependencies.ContainsKey(m_InternalName))
             {
-                MicroInject.NamedDependencies.Remove(m_InternalName);
+                m_MicroInject.NamedDependencies.Remove(m_InternalName);
             }
 
-            if (MicroInject.DynamicInjectFields.ContainsKey(m_InternalName))
+            if (m_MicroInject.DynamicInjectFields.ContainsKey(m_InternalName))
             {
-                foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
+                foreach (var idi in m_MicroInject.DynamicInjectFields[m_InternalName])
                 {
                     idi.ObjectValue = null;
                     idi.Dirty = true;
                 }
             }
 
-            if (!MicroInject.NamedDependencies.ContainsKey(value))
+            if (!m_MicroInject.NamedDependencies.ContainsKey(value))
             {
-                MicroInject.NamedDependencies.Add(value, Component);
+                m_MicroInject.NamedDependencies.Add(value, Component);
 
-                if (MicroInject.DynamicInjectFields.ContainsKey(value))
+                if (m_MicroInject.DynamicInjectFields.ContainsKey(value))
                 {
-                    foreach (var idi in MicroInject.DynamicInjectFields[m_InternalName])
+                    foreach (var idi in m_MicroInject.DynamicInjectFields[m_InternalName])
                     {
                         idi.ObjectValue = Component;
                         idi.Dirty = true;
@@ -66,7 +74,7 @@ namespace FurrFieldStudio.MicroInject
                 }
                 else
                 {
-                    MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
+                    m_MicroInject.DynamicInjectFields.Add(value, new List<InternalDynamicInject>());
                 }
             }
         }

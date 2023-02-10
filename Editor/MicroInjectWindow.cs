@@ -14,7 +14,6 @@ namespace FurrFieldStudio.MicroInject.Editor
 {
     public class MicroInjectWindow : EditorWindow
     {
-
         private bool m_IsDebugFoldoutOpen;
         
         [MenuItem("FurrField Studio/Micro Inject")]
@@ -39,7 +38,7 @@ namespace FurrFieldStudio.MicroInject.Editor
             
             if (GUILayout.Button("Clear MicroInject lists"))
             {
-                FurrFieldStudio.MicroInject.MicroInject.ClearMicroInjectLists();
+                MicroInject.Instance.ClearMicroInjectLists();
             }
 
             m_IsDebugFoldoutOpen = EditorGUILayout.Foldout(m_IsDebugFoldoutOpen, "Debug");
@@ -55,8 +54,8 @@ namespace FurrFieldStudio.MicroInject.Editor
         {
             MicroInjectLoadDependencies microInjectLoadDependencies = FindObjectsOfType<MicroInjectLoadDependencies>()[0];
             
-            Dictionary<string, Component> namedDependencies = new Dictionary<string, Component>();
-            Dictionary<Type, Component> dependencies = new Dictionary<Type, Component>();
+            Dictionary<string, object> namedDependencies = new Dictionary<string, object>();
+            Dictionary<Type, object> dependencies = new Dictionary<Type, object>();
             
             foreach (var component in microInjectLoadDependencies.DependenciesContainer)
             {
@@ -81,7 +80,7 @@ namespace FurrFieldStudio.MicroInject.Editor
                 {
                     if (markedAsAutoInject[componentType])
                     {
-                        MicroInject.InjectDependenciesInEditor(component, dependencies, namedDependencies);
+                        MicroInject.Instance.InjectDependenciesInEditor(component, dependencies, namedDependencies);
                     }
                 }
                 else
@@ -89,7 +88,7 @@ namespace FurrFieldStudio.MicroInject.Editor
                     if (Attribute.GetCustomAttribute(componentType, typeof(AutoInjectInEditor)) != null)
                     {
                         markedAsAutoInject.Add(componentType, true);
-                        MicroInject.InjectDependenciesInEditor(component, dependencies, namedDependencies);
+                        MicroInject.Instance.InjectDependenciesInEditor(component, dependencies, namedDependencies);
                     }
                     else
                     {
@@ -165,13 +164,17 @@ namespace FurrFieldStudio.MicroInject.Editor
             GUILayout.BeginVertical("BOX");
             GUILayout.Label("Dependencies");
             
-            foreach (var kvp in MicroInject.GetDependenciesList())
+            foreach (var kvp in MicroInject.Instance.GetDependenciesList())
             {
                 GUILayout.BeginVertical("BOX");
                 
                 EditorGUILayout.LabelField("Type:", kvp.Key.ToString());
-                EditorGUILayout.ObjectField("Component:", kvp.Value, typeof(Component), true);
-                
+
+                if (kvp.Value is Component comp)
+                {
+                    EditorGUILayout.ObjectField("Component:", comp, typeof(Component), true);
+                }
+
                 GUILayout.EndVertical();
             }
             GUILayout.EndVertical();
@@ -182,13 +185,17 @@ namespace FurrFieldStudio.MicroInject.Editor
             GUILayout.BeginVertical("BOX");
             GUILayout.Label("Named Dependencies");
             
-            foreach (var kvp in MicroInject.GetNamedDependencies())
+            foreach (var kvp in MicroInject.Instance.GetNamedDependencies())
             {
                 GUILayout.BeginVertical("BOX");
                 
                 EditorGUILayout.LabelField("Name:", kvp.Key);
-                EditorGUILayout.ObjectField("Component:", kvp.Value, typeof(Component), true);
                 
+                if (kvp.Value is Component comp)
+                {
+                    EditorGUILayout.ObjectField("Component:", comp, typeof(Component), true);
+                }
+
                 GUILayout.EndVertical();
             }
             GUILayout.EndVertical();
@@ -199,18 +206,21 @@ namespace FurrFieldStudio.MicroInject.Editor
             GUILayout.BeginVertical("BOX");
             GUILayout.Label("Dynamic Inject Fields");
 
-            Component comp = null;
+            object obj = null;
             
-            foreach (var kvp in MicroInject.GetDynamicInjectFields())
+            foreach (var kvp in MicroInject.Instance.GetDynamicInjectFields())
             {
                 GUILayout.BeginVertical("BOX");
                 
                 EditorGUILayout.LabelField("Name:", kvp.Key);
 
-                if (kvp.Value.Count > 0) comp = kvp.Value[0].ObjectValue;
-                else comp = null;
+                if (kvp.Value.Count > 0) obj = kvp.Value[0].ObjectValue;
+                else obj = null;
                 
-                EditorGUILayout.ObjectField("Component:", comp, typeof(Component), true);
+                if (obj is Component comp)
+                {
+                    EditorGUILayout.ObjectField("Component:", comp, typeof(Component), true);
+                }
 
                 GUILayout.EndVertical();
             }

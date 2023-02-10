@@ -4,28 +4,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using FurrFieldStudio.MicroInject.Components;
 using UnityEngine;
 
 namespace FurrFieldStudio.MicroInject
 {
     public class MicroInject
     {
-        internal static Dictionary<Type, Component> Dependencies = new Dictionary<Type, Component>();
+        public static MicroInject Instance {
+            get
+            {
+                if (m_MicroInject == null)
+                {
+                    m_MicroInject = new MicroInject();
+                }
+
+                return m_MicroInject;
+            }
+        }
+
+        private static MicroInject m_MicroInject;
         
+        internal Dictionary<Type, object> Dependencies = new  Dictionary<Type, object>();
+
         //Named dependencies data
-        internal static Dictionary<string, Component> NamedDependencies = new Dictionary<string, Component>();
+        internal Dictionary<string, object> NamedDependencies = new Dictionary<string, object>();
         
         //Dynamic dependencies data
-        internal static Dictionary<string, List<InternalDynamicInject>> DynamicInjectFields = new Dictionary<string, List<InternalDynamicInject>>();
+        internal Dictionary<string, List<InternalDynamicInject>> DynamicInjectFields = new Dictionary<string, List<InternalDynamicInject>>();
 
+        public static MicroInject GetMicroInject(Component comp) => comp.TryGetComponent(out MicroInjectBucket bucket) ? bucket.MicroInject : Instance;
+        
         #region Registering
         
-        public static void RegisterAsDependency(Component dependency)
+        public void RegisterAsDependency(object dependency)
         {
+            Dependency dep = dependency.GetType().GetCustomAttribute<Dependency>();
+
+            if (dep != null)
+            {
+                if (dep.DependencyType != null)
+                {
+                    Dependencies.Add(dep.DependencyType, dependency);
+                    return;
+                }
+            }
+            
             Dependencies.Add(dependency.GetType(), dependency);
         }
         
-        public static bool RegisterNamedDependency(Component component)
+        public bool RegisterNamedDependency(object component)
         {
             FieldInfo[] infos = component.GetType().GetFields();
             foreach (var fi in infos)
@@ -44,7 +72,7 @@ namespace FurrFieldStudio.MicroInject
             return false;
         }
 
-        internal static void RegisterDynamicInject(InternalDynamicInject internalDynamicInject)
+        internal void RegisterDynamicInject(InternalDynamicInject internalDynamicInject)
         {
             if (!DynamicInjectFields.ContainsKey(internalDynamicInject.Name))
             {
@@ -58,12 +86,12 @@ namespace FurrFieldStudio.MicroInject
 
         #region Injecting
 
-        public static void InjectDependencies(object toInject)
+        public void InjectDependencies(object toInject)
         {
             InjectDependencies(toInject, Dependencies, NamedDependencies);
         }
         
-        private static void InjectDependencies(object toInject, Dictionary<Type, Component> dependencies, Dictionary<string, Component> namedDependencies)
+        private void InjectDependencies(object toInject, Dictionary<Type, object> dependencies, Dictionary<string, object> namedDependencies)
         {
             FieldInfo[] infos = toInject.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             List<FieldInfo> filteredInfos = new List<FieldInfo>(infos.Length);
@@ -83,7 +111,7 @@ namespace FurrFieldStudio.MicroInject
         
 #if UNITY_EDITOR
         
-        public static void InjectDependenciesInEditor(object toInject, Dictionary<Type, Component> dependencies, Dictionary<string, Component> namedDependencies)
+        public void InjectDependenciesInEditor(object toInject, Dictionary<Type, object> dependencies, Dictionary<string, object> namedDependencies)
         {
             FieldInfo[] infos = toInject.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             List<FieldInfo> filteredInfos = new List<FieldInfo>(infos.Length);
@@ -103,7 +131,7 @@ namespace FurrFieldStudio.MicroInject
         
 #endif
 
-        private static void InjectFilteredInternal(List<FieldInfo> filteredInfos, object toInject, Dictionary<Type, Component> dependencies, Dictionary<string, Component> namedDependencies)
+        private static void InjectFilteredInternal(List<FieldInfo> filteredInfos, object toInject, Dictionary<Type, object> dependencies, Dictionary<string, object> namedDependencies)
         {
             Inject inject;
             foreach (var fi in filteredInfos)
@@ -130,7 +158,7 @@ namespace FurrFieldStudio.MicroInject
         }
         
         
-        public static void InjectNamedDependency(string fieldName, object component)
+        public void InjectNamedDependency(string fieldName, object component)
         {
             FieldInfo field = component.GetType().GetField(fieldName);
             Inject inject = field.GetCustomAttribute<Inject>();
@@ -140,7 +168,7 @@ namespace FurrFieldStudio.MicroInject
             }
         }
         
-        private static void InternalInjectNamedDependency(FieldInfo fieldInfo, string key, object component)
+        private void InternalInjectNamedDependency(FieldInfo fieldInfo, string key, object component)
         {
             if (NamedDependencies.ContainsKey(key))
             {                
@@ -150,7 +178,7 @@ namespace FurrFieldStudio.MicroInject
         
         #endregion
         
-        public static void RebuildDependencyList()
+        public void RebuildDependencyList()
         {
             var filteredDependencies = Dependencies.Where(kvp => kvp.Value == null).ToArray();
             Dependencies.Clear();
@@ -167,7 +195,7 @@ namespace FurrFieldStudio.MicroInject
             }
         }
 
-        public static void ClearMicroInjectLists()
+        public void ClearMicroInjectLists()
         {
             Dependencies.Clear();
             NamedDependencies.Clear();
@@ -178,11 +206,11 @@ namespace FurrFieldStudio.MicroInject
       
         #region DebugGet
 
-        public static Dictionary<Type, Component> GetDependenciesList() => Dependencies;
+        public Dictionary<Type, object> GetDependenciesList() => Dependencies;
 
-        public static Dictionary<string, Component> GetNamedDependencies() => NamedDependencies;
+        public Dictionary<string, object> GetNamedDependencies() => NamedDependencies;
         
-        public static Dictionary<string, List<InternalDynamicInject>> GetDynamicInjectFields() => DynamicInjectFields;
+        public Dictionary<string, List<InternalDynamicInject>> GetDynamicInjectFields() => DynamicInjectFields;
 
         #endregion
 
