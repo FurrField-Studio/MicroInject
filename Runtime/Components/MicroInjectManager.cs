@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -23,14 +19,14 @@ namespace FurrFieldStudio.MicroInject.Components
             {
                 if (change == PlayModeStateChange.ExitingPlayMode)
                 {
-                    MicroInject.Instance.ClearMicroInjectLists();
+                    MicroInject.GlobalBuckets.Clear();
                 }
             };
 #endif
 
             if (RebuildDependencyListOnSceneChange)
             {
-                SceneManager.sceneUnloaded += scene => MicroInject.Instance.RebuildDependencyList();
+                SceneManager.sceneUnloaded += scene => MicroInject.RebuildDependencyList();
             }
         }
     }

@@ -2,59 +2,21 @@
 
 namespace FurrFieldStudio.MicroInject
 {
-    #region InjectionAttributes
-
-    [System.AttributeUsage(System.AttributeTargets.Field)]
-    public class Inject : System.Attribute
-    {
-        //Used for statically named dependencies
-        public string Key;
-        public bool InjectInEditor;
-
-        public Inject(string key)
-        {
-            Key = key;
-            InjectInEditor = false;
-        }
-        
-        public Inject(bool injectInEditor)
-        {
-            Key = "";
-            InjectInEditor = injectInEditor;
-        }
-        
-        public Inject(string key = "", bool injectInEditor = false)
-        {
-            Key = key;
-            InjectInEditor = injectInEditor;
-        }
-    }
-    
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class AutoInjectInEditor : System.Attribute
-    {
-        public AutoInjectInEditor()
-        {
-        }
-    }
-
-    #endregion
-
     #region DependencyAttributes
 
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class Dependency : System.Attribute
+    [AttributeUsage(AttributeTargets.Class)]
+    public class Dependency : Attribute
     {
         public Type DependencyType { get; private set; }
 
-        public Dependency(Type dependencyType = null)
+        public Dependency(Type dependencyType)
         {
             DependencyType = dependencyType;
         }
     }
     
-    [System.AttributeUsage(System.AttributeTargets.Field)]
-    public class NamedDependencyField : System.Attribute
+    [AttributeUsage(AttributeTargets.Field)]
+    public class NamedDependencyField : Attribute
     {
         public NamedDependencyField()
         {

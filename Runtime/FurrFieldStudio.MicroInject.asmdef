@@ -1,3 +1,17 @@
-﻿{
-  "name": "FurrFieldStudio.MicroInject"
+{
+    "name": "FurrFieldStudio.MicroInject",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:3d0c0d2a7f97119408d49fd37a6d3d4f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
