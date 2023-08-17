@@ -11,6 +11,8 @@ namespace FurrFieldStudio.MicroInject.Editor
 {
     public static class ContainerGeneration
     {
+        #region Generating
+
         public static void GenerateConcreteBucket(this MicroInjectObject microInjectObject)
         {
             List<Component> components;
@@ -24,9 +26,10 @@ namespace FurrFieldStudio.MicroInject.Editor
                 components = microInjectObject.GetComponents(typeof(Component)).ToList();
             }
 
-            List<DependencyContainer> dependencies = new List<DependencyContainer>();
+            components.RemoveAll(comp => comp == null);
 
-            Dependency dep;
+            List<DependencyContainer> dependencies = new List<DependencyContainer>();
+            
             DependencyContainer dp;
             foreach (var com in components)
             {
@@ -73,9 +76,21 @@ namespace FurrFieldStudio.MicroInject.Editor
                 dependencyBlackboard.varName = ToLowerCamelCase(dependencyBlackboard.varName);
                 data.Add(dependencyBlackboard);
             }
+            
+            foreach (ScriptableObject so in microInjectObject.soContainer)
+            {
+                DependencyBlackboardElement dbe = new DependencyBlackboardElement()
+                {
+                    type = so.GetType().FullName,
+                    varName = ToLowerCamelCase(so.name)
+                };
+                data.Add(dbe);
+            }
 
             string generatedFile = ComponentContainerGenerator.GenerateContainerGenerator(microInjectObject.generatedNamespace, microInjectObject.generatedClassName, data);
-
+            
+            if (!Directory.Exists(microInjectObject.generatedFolder)) Directory.CreateDirectory(microInjectObject.generatedFolder);
+            
             string fullPath = microInjectObject.generatedFolder + "\\" + microInjectObject.generatedClassName + ".cs";
             File.WriteAllText(fullPath, generatedFile);
             AssetDatabase.ImportAsset(fullPath);
@@ -83,50 +98,7 @@ namespace FurrFieldStudio.MicroInject.Editor
 
             EditorUtility.RequestScriptReload();
         }
-
-        public static void AddConreteBucketComponent(this MicroInjectObject microInjectObject)
-        {
-            Type generatedType = GetTypeFromAssembly(microInjectObject.generatedNamespace, microInjectObject.generatedClassName);
-
-            microInjectObject.generatedContainer = microInjectObject.gameObject.GetComponent(generatedType);
-            if (microInjectObject.generatedContainer == null)
-            {
-                microInjectObject.generatedContainer = microInjectObject.gameObject.AddComponent(generatedType);
-            }
-
-            foreach (var fi in generatedType.GetRuntimeFields())
-            {
-                if (fi.FieldType.IsSubclassOf(typeof(MonoBehaviour)) || fi.FieldType.IsSubclassOf(typeof(Component)) || fi.FieldType.IsInterface)
-                {
-                    Component comp = microInjectObject.GetComponent(fi.FieldType);
-                    if (comp == null)
-                    {
-                        comp = microInjectObject.GetComponentInChildren(fi.FieldType);
-                    }
-
-                    fi.SetValue(microInjectObject.generatedContainer, comp);
-                }
-            }
-        }
-
-        private static Type GetTypeFromAssembly(string namespaceName, string typeName)
-        {
-            List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.FullName.StartsWith("Assembly-CSharp")).ToList();
-
-            foreach (var assembly in assemblies)
-            {
-                Type t = assembly.GetType(namespaceName + '.' + typeName, false);
-                if (t != null)
-                    return t;
-            }
-
-            throw new ArgumentException(
-                "Type " + typeName + " doesn't exist in the current app domain");
-        }
-
-        private static string ToLowerCamelCase(string str) => Char.ToLowerInvariant(str[0]) + str.Substring(1);
-
+        
         private class DependencyContainer
         {
             public readonly Type ComponentType;
@@ -157,5 +129,85 @@ namespace FurrFieldStudio.MicroInject.Editor
                 }
             }
         }
+
+        #endregion
+
+        #region AddConcreteBucket
+
+        public static void AddConreteBucketComponent(this MicroInjectObject microInjectObject)
+        {
+            Type generatedType = GetTypeFromAssembly(microInjectObject.generatedNamespace, microInjectObject.generatedClassName);
+
+            microInjectObject.generatedContainer = microInjectObject.gameObject.GetComponent(generatedType);
+            if (microInjectObject.generatedContainer == null)
+            {
+                microInjectObject.generatedContainer = microInjectObject.gameObject.AddComponent(generatedType);
+            }
+
+            foreach (var fi in generatedType.GetRuntimeFields())
+            {
+                if (fi.FieldType.IsSubclassOf(typeof(MonoBehaviour)) || fi.FieldType.IsSubclassOf(typeof(Component)) || fi.FieldType.IsInterface)
+                {
+                    Component comp = microInjectObject.GetComponent(fi.FieldType);
+                    if (comp == null)
+                    {
+                        comp = microInjectObject.GetComponentInChildren(fi.FieldType);
+                    }
+
+                    fi.SetValue(microInjectObject.generatedContainer, comp);
+                } else if (fi.FieldType.IsSubclassOf(typeof(ScriptableObject)))
+                {
+                    ScriptableObject so = microInjectObject.soContainer.Find(so => so.GetType() == fi.FieldType);
+
+                    if (so != null)
+                    {
+                        fi.SetValue(microInjectObject.generatedContainer, so);
+                    }
+                }
+            }
+            
+            EditorUtility.SetDirty(microInjectObject);
+            EditorUtility.SetDirty(microInjectObject.generatedContainer);
+        }
+
+        private static Type GetTypeFromAssembly(string namespaceName, string typeName)
+        {
+            List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => a.FullName.StartsWith("Assembly-CSharp")).ToList();
+
+            foreach (var assembly in assemblies)
+            {
+                Type t = assembly.GetType(namespaceName + '.' + typeName, false);
+                if (t != null)
+                    return t;
+            }
+
+            throw new ArgumentException(
+                "Type " + typeName + " doesn't exist in the current app domain");
+        }
+
+        private static string ToLowerCamelCase(string str) => Char.ToLowerInvariant(str[0]) + str.Substring(1);
+
+        #endregion
+
+        #region InjectingStuff
+
+        public static void InjectDependencies(this MicroInjectObject microInjectObject)
+        {
+            FieldInfo[] generatedContainerFields = microInjectObject.generatedContainer.GetType().GetFields();
+            
+            foreach (var comp in microInjectObject.GetComponentsInChildren(typeof(Component)))
+            {
+                foreach (var fi in comp.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+                {
+                    if (fi.GetCustomAttribute<Inject>() == null) continue;
+
+                    FieldInfo matchingContainerFi = Array.Find(generatedContainerFields, generatedFi => generatedFi.FieldType.IsSubclassOf(fi.FieldType) || generatedFi.FieldType == fi.FieldType);
+                    fi.SetValue(comp, matchingContainerFi.GetValue(microInjectObject.generatedContainer));
+                }
+            }
+        }
+
+        #endregion
     }
 }

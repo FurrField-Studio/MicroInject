@@ -2,6 +2,16 @@
 
 namespace FurrFieldStudio.MicroInject
 {
+    [AttributeUsage(AttributeTargets.Field)]
+    public class Inject : Attribute
+    {
+        public Inject()
+        {
+            
+        }
+    }
+    
+    
     #region DependencyAttributes
 
     [AttributeUsage(AttributeTargets.Class)]

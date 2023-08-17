@@ -5,6 +5,7 @@ using UnityEngine;
 namespace FurrFieldStudio.MicroInject.Editor
 {
     [CustomEditor(typeof(MicroInjectObject))]
+    [CanEditMultipleObjects]
     public class MicroInjectObjectInspector : UnityEditor.Editor
     {
         private MicroInjectObject _microInjectObject;
@@ -22,6 +23,8 @@ namespace FurrFieldStudio.MicroInject.Editor
         private SerializedProperty _generatedClassName;
         
         private SerializedProperty _dependenciesContainer;
+
+        private SerializedProperty _soContainer;
         
         private SerializedProperty _blackboardDependencies;
         
@@ -39,6 +42,8 @@ namespace FurrFieldStudio.MicroInject.Editor
             _generatedClassName = serializedObject.FindProperty("generatedClassName");
             
             _dependenciesContainer = serializedObject.FindProperty("dependenciesContainer");
+            
+            _soContainer = serializedObject.FindProperty("soContainer");
             
             _blackboardDependencies = serializedObject.FindProperty("blackboardDependencies");
                         
@@ -71,6 +76,8 @@ namespace FurrFieldStudio.MicroInject.Editor
             
             EditorGUILayout.PropertyField(_dependenciesContainer);
 
+            EditorGUILayout.PropertyField(_soContainer);
+            
             EditorGUILayout.PropertyField(_blackboardDependencies);
 
             GUI.enabled = false;
@@ -81,8 +88,7 @@ namespace FurrFieldStudio.MicroInject.Editor
 
             if (GUILayout.Button("Generate concrete bucket")) _microInjectObject.GenerateConcreteBucket();
             if (GUILayout.Button("Add concrete bucket component")) _microInjectObject.AddConreteBucketComponent();
+            if (GUILayout.Button("Inject dependencies")) _microInjectObject.InjectDependencies();
         }
-        
-       
     }
 }

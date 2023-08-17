@@ -24,6 +24,8 @@ namespace FurrFieldStudio.MicroInject.Components
         
         public List<Component> dependenciesContainer;
         
+        public List<ScriptableObject> soContainer;
+        
         public List<DependencyBlackboardElement> blackboardDependencies;
         
         public Component generatedContainer;
